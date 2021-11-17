@@ -255,6 +255,7 @@ class PrettyContext:
         'multiline_strategy',
         'max_seq_len',
         'sort_dict_keys',
+        'sort_kwargs',
         'user_ctx'
     )
 
@@ -266,6 +267,7 @@ class PrettyContext:
         multiline_strategy=MULTILINE_STRATEGY_PLAIN,
         max_seq_len=1000,
         sort_dict_keys=False,
+        sort_kwargs=False,
         user_ctx=None
     ):
         self.indent = indent
@@ -273,6 +275,7 @@ class PrettyContext:
         self.multiline_strategy = multiline_strategy
         self.max_seq_len = max_seq_len
         self.sort_dict_keys = sort_dict_keys
+        self.sort_kwargs = sort_kwargs
 
         if visited is None:
             visited = set()
@@ -830,11 +833,18 @@ def pretty_call_alt(ctx, fn, args=(), kwargs=()):
             UserWarning
         )
 
-    kwargitems = (
-        kwargs.items()
-        if isinstance(kwargs, (OrderedDict, dict))
-        else kwargs
-    )
+    if ctx.sort_kwargs:
+        kwargitems = (
+            [(k, kwargs[k]) for k in sorted(kwargs.keys(), key=_AlwaysSortable)]
+            if isinstance(kwargs, (OrderedDict, dict))
+            else kwargs
+        )
+    else:
+        kwargitems = (
+            kwargs.items()
+            if isinstance(kwargs, (OrderedDict, dict))
+            else kwargs
+        )
 
     return build_fncall(
         ctx,
@@ -1947,7 +1957,8 @@ def python_to_sdocs(
     depth,
     ribbon_width,
     max_seq_len,
-    sort_dict_keys
+    sort_dict_keys,
+    sort_kwargs
 ):
     if depth is None:
         depth = float('inf')
@@ -1959,7 +1970,8 @@ def python_to_sdocs(
             depth_left=depth,
             visited=set(),
             max_seq_len=max_seq_len,
-            sort_dict_keys=sort_dict_keys
+            sort_dict_keys=sort_dict_keys,
+            sort_kwargs=sort_kwargs
         )
     )
 

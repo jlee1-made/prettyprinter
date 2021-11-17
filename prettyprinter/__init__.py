@@ -70,11 +70,12 @@ _default_config = {
     'depth': None,
     'max_seq_len': 1000,
     'sort_dict_keys': False,
+    'sort_kwargs': False,
 }
 
 
 def _merge_defaults(
-    *, indent, width, depth, ribbon_width, max_seq_len, sort_dict_keys
+    *, indent, width, depth, ribbon_width, max_seq_len, sort_dict_keys, sort_kwargs
 ):
     kwargs = locals()
     return {key: kwargs[key] if kwargs[key] is not _UNSET_SENTINEL else default
@@ -116,7 +117,8 @@ def pformat(
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
     compact=_UNSET_SENTINEL,
-    sort_dict_keys=_UNSET_SENTINEL
+    sort_dict_keys=_UNSET_SENTINEL,
+    sort_kwargs=_UNSET_SENTINEL
 ):
     """
     Returns a pretty printed representation of the object as a ``str``.
@@ -132,6 +134,7 @@ def pformat(
             ribbon_width=ribbon_width,
             max_seq_len=max_seq_len,
             sort_dict_keys=sort_dict_keys,
+            sort_kwargs=sort_kwargs,
         )
     )
     stream = StringIO()
@@ -150,6 +153,7 @@ def pprint(
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
     sort_dict_keys=_UNSET_SENTINEL,
+    sort_kwargs=_UNSET_SENTINEL,
     end='\n'
 ):
     """Pretty print a Python value ``object`` to ``stream``,
@@ -170,6 +174,10 @@ def pprint(
                            sorted in the output. Defaults to ``False``, in
                            which case the default order is used, which is the
                            insertion order in CPython 3.6+.
+    :param sort_kwargs: a ``bool`` value indicating if keyword arguments should be
+                           sorted in the output. Defaults to ``False``, in
+                           which case the default order is used, which is the
+                           order of the keyword arguments in CPython 3.6+.
     """
     sdocs = python_to_sdocs(
         object,
@@ -180,6 +188,7 @@ def pprint(
             ribbon_width=ribbon_width,
             max_seq_len=max_seq_len,
             sort_dict_keys=sort_dict_keys,
+            sort_kwargs=sort_kwargs,
         )
     )
     stream = (
@@ -206,6 +215,7 @@ def cpprint(
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
     sort_dict_keys=_UNSET_SENTINEL,
+    sort_kwargs=_UNSET_SENTINEL,
     style=None,
     end='\n'
 ):
@@ -228,6 +238,10 @@ def cpprint(
                            sorted in the output. Defaults to ``False``, in
                            which case the default order is used, which is the
                            insertion order in CPython 3.6+.
+    :param sort_kwargs: a ``bool`` value indicating if keyword args should be
+                           sorted in the output. Defaults to ``False``, in
+                           which case the default order is used, which is the
+                           order of the keyword args in CPython 3.6+.
     :param style: one of ``'light'``, ``'dark'`` or a subclass
                   of ``pygments.styles.Style``. If omitted,
                   will use the default style. If the default style
@@ -243,6 +257,7 @@ def cpprint(
             ribbon_width=ribbon_width,
             max_seq_len=max_seq_len,
             sort_dict_keys=sort_dict_keys,
+            sort_kwargs=sort_kwargs,
         )
     )
     stream = (
@@ -348,7 +363,8 @@ def set_default_config(
     width=_UNSET_SENTINEL,
     ribbon_width=_UNSET_SENTINEL,
     depth=_UNSET_SENTINEL,
-    sort_dict_keys=_UNSET_SENTINEL
+    sort_dict_keys=_UNSET_SENTINEL,
+    sort_kwargs=_UNSET_SENTINEL
 ):
     """
     Sets the default configuration values used when calling
@@ -377,6 +393,9 @@ def set_default_config(
 
     if sort_dict_keys is not _UNSET_SENTINEL:
         new_defaults['sort_dict_keys'] = sort_dict_keys
+
+    if sort_kwargs is not _UNSET_SENTINEL:
+        new_defaults['sort_kwargs'] = sort_kwargs
 
     _default_config = new_defaults
     return new_defaults
